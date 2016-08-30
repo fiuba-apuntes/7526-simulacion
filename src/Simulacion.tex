@@ -61,8 +61,8 @@
 \usepackage{\rutapaquetes/macros} % Macros útiles para los apuntes (cargado desde macros.sty)
 
 % Defino los entornos de los cuadros
-\cuadro{definicion}{gray}
-\cuadro{bloque}{blue}
+%\cuadro{definicion}{gray}
+\cuadro{bloque}{gray}
 
 %% *** CONFIGURACION ***
 
@@ -486,33 +486,62 @@ CHAU    TERMINATE
 
 \section{Cartilla de bloques}
 
-Id: número o nombre.
+\paragraph{Referencias}
+\begin{description}
+  \item[ID] número o nombre
+\end{description}
+
+\newcommand{\bloquetitle}[1]{\texttt{#1}}
+\newcommand{\bloquesintax}[1]{\paragraph{Bloque} \texttt{#1} \\}
+\newcommand{\accion}[1]{\paragraph{Acción que representa} #1 \\}
+\newcommand{\parametros}[1]{\paragraph{Parámetros} #1}
+\newcommand{\paramtitle}[1]{\texttt{#1}:}
+\newcommand{\parametrosdefault}[1]{\paragraph{Parámetros por defecto} #1}
+
+\begin{bloque}{\bloquetitle{START}}
+  \bloquesintax{START n}
+  \accion{Simular $n$ transacciones}
+  \parametros{
+    \begin{description}
+      \item[\paramtitle{n}] cantidad de transacciones
+    \end{description}
+  }
+\end{bloque}
+
+\begin{bloque}{\bloquetitle{GENERATE}}
+  \bloquesintax{GENERATE [t],[d],[o],[c],[p]}
+  \accion{Arribo de transacciones independientes entre sí cada cierto tiempo
+    $t \pm d$ o $t \times d$}
+  \parametros{
+    \begin{description}
+      \item[\paramtitle{t}] valor medio entre arribos
+      \item[\paramtitle{d}] según el tipo asignado
+      \begin{itemize}
+        \item Si $d \in N$, es el desvío máximo permitido.
+        \item Si $d$ es una \texttt{FUNCTION}, se multiplica $t \times d$ para
+          calcular el próximo nacimiento
+      \end{itemize}
+      \item[\paramtitle{o}] instante en que se genera la primera transacción
+      \item[\paramtitle{c}] cantidad máxima de transacciones a generar
+      \item[\paramtitle{p}] prioridad de la transacción a generar
+    \end{description}
+  }
+  \parametrosdefault{
+    \begin{itemize}
+      \item $t=0$
+      \item $d=0$
+      \item $o=1$
+      \item $c=\infty$
+      \item $p=0$ (prioridad mínima)
+    \end{itemize}
+  }
+\end{bloque}
 
 \begin{longtable}{|lc>{\raggedright}p{3cm}|>{\raggedright}p{5cm}|>{\raggedright}p{7cm}|>{\raggedright}p{4cm}|}
 \hline
-\hline 
 \multicolumn{3}{|l|}{\textbf{Bloque}} & \textbf{Acción que representa} & \textbf{Parámetros} & \textbf{Default}\tabularnewline
-\hline 
- & \texttt{START} & \texttt{n} & Simular $n$ transacciones & $n=$ cantidad de transacciones & \tabularnewline
 \hline
-\endhead
-\hline 
- & \texttt{GENERATE} & \texttt{{[}t{]},{[}d{]},{[}o{]},{[}c{]},p{]}} & Arribo de transacciones independientes entre sí cada cierto tiempo
-$t\pm d$ o $t\times d$ & \begin{itemize}
-\item $t=$ valor medio entre arribos
-\item Si $d\in N$, es el desvío máximo permitido. Si $d$ es una \texttt{FUNCTION},
-se multiplica $t\times d$ para calcular el próximo nacimiento
-\item $o=$ instante en que se genera la primera transacción
-\item $c=$ cantidad máxima de transacciones a generar
-\item $p=$ prioridad de la transacción a generar\end{itemize}
- & \begin{itemize}
-\item $t=0$
-\item $d=0$
-\item $o=1$
-\item $c=\infty$
-\item $p=0$ (prioridad mínima)\end{itemize}
-\tabularnewline
-\hline 
+\hline
  & \texttt{ADVANCE} & \texttt{t{[},d{]}} & Realización de una tarea que dura cierto tiempo $t\pm d$ o $t\times d$ & \begin{itemize}
 \item $t=$ valor medio de la duración de la tarea (constante o SNA)
 \item Si $d\in N$, es el desvío máximo permitido. Si $d$ es una \texttt{FUNCTION},
