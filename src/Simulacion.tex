@@ -537,41 +537,104 @@ CHAU    TERMINATE
   }
 \end{bloque}
 
+\begin{bloque}{\bloquetitle{ADVANCE}}
+  \bloquesintax{ADVANCE t[,d]}
+  \accion{Realización de una tarea que dura cierto tiempo $t \pm d$ o $t \times d$}
+  \parametros{
+    \begin{description}
+      \item[\paramtitle{t}] valor medio de la duración de la tarea (constante o SNA)
+      \item[\paramtitle{d}] según el tipo asignado
+      \begin{itemize}
+        \item Si $d \in N$, es el desvío máximo permitido.
+        \item Si $d$ es una \texttt{FUNCTION}, se multiplica $t \times d$ para
+          calcular la duración. \emph{No puede ser referencia a FUNCTION}.
+      \end{itemize}
+      \item[] Debe cumplirse que $t\geq d$
+    \end{description}
+  }
+  \parametrosdefault{
+    \begin{itemize}
+      \item $t=0$
+      \item $d=0$
+    \end{itemize}
+  }
+\end{bloque}
+
+\begin{bloque}{\bloquetitle{TERMINATE}}
+  \bloquesintax{TERMINATE [n]}
+  \accion{Salida de $n$ transacciones. Si $n$ no se especifica, no se contabiliza
+    la transacción pero la misma se destruye.}
+  \parametros{
+    \begin{description}
+      \item[\paramtitle{n}] $\in N$
+    \end{description}
+  }
+  \parametrosdefault{
+    \begin{itemize}
+      \item $n=0$
+    \end{itemize}
+  }
+\end{bloque}
+
+\begin{bloque}{\bloquetitle{SEIZE}}
+  \bloquesintax{SEIZE f}
+  \accion{Tomar un recurso de uso exclusivo (\emph{facility})}
+  \parametros{
+    \begin{description}
+      \item[\paramtitle{f}] id de la \emph{facility}
+    \end{description}
+  }
+\end{bloque}
+
+\begin{bloque}{\bloquetitle{RELEASE}}
+  \bloquesintax{RELEASE f}
+  \accion{Dejar un recurso de uso exclusivo (\emph{facility})}
+  \parametros{
+    \begin{description}
+      \item[\paramtitle{f}] id de la \emph{facility}
+    \end{description}
+  }
+\end{bloque}
+
+\begin{bloque}{\bloquetitle{ENTER}}
+  \bloquesintax{ENTER s[,l]}
+  \accion{Intentar ocupar uno o más lugares de un recurso de uso compartido
+    (\emph{storage})}
+  \parametros{
+    \begin{description}
+      \item[\paramtitle{s}] id del \emph{storage}
+      \item[\paramtitle{l}] lugares que ocupa la transacción
+    \end{description}
+  }
+  \parametrosdefault{
+    \begin{itemize}
+      \item $l=1$
+    \end{itemize}
+  }
+\end{bloque}
+
+\begin{bloque}{\bloquetitle{LEAVE}}
+  \bloquesintax{LEAVE s[,l]}
+  \accion{Dejar uno o más lugares de un recurso de uso compartido (\emph{storage}).
+    No es necesario haber ejecutado \texttt{ENTER} previamente.}
+  \parametros{
+    \begin{description}
+      \item[\paramtitle{s}] id del \emph{storage}
+      \item[\paramtitle{l}] lugares que deja la transacción
+    \end{description}
+  }
+  \parametrosdefault{
+    \begin{itemize}
+      \item $l=1$
+    \end{itemize}
+  }
+\end{bloque}
+
 \begin{longtable}{|lc>{\raggedright}p{3cm}|>{\raggedright}p{5cm}|>{\raggedright}p{7cm}|>{\raggedright}p{4cm}|}
 \hline
 \multicolumn{3}{|l|}{\textbf{Bloque}} & \textbf{Acción que representa} & \textbf{Parámetros} & \textbf{Default}\tabularnewline
 \hline
 \hline
- & \texttt{ADVANCE} & \texttt{t{[},d{]}} & Realización de una tarea que dura cierto tiempo $t\pm d$ o $t\times d$ & \begin{itemize}
-\item $t=$ valor medio de la duración de la tarea (constante o SNA)
-\item Si $d\in N$, es el desvío máximo permitido. Si $d$ es una \texttt{FUNCTION},
-se multiplica $t\times d$ para calcular la duración. \emph{No puede
-ser referencia a FUNCTION.}
-\item Debe cumplirse que $t\geq d$\end{itemize}
- & \begin{itemize}
-\item $t=0$
-\item $d=0$\end{itemize}
-\tabularnewline
-\hline 
- & \texttt{TERMINATE } & \texttt{{[}n{]}} & Salida de $n$ transacciones. Si $n$ no se especifica, no se contabiliza
-la transacción pero la misma se destruye & $n\in N$ & $n=0$\tabularnewline
-\hline 
- & \texttt{SEIZE} & \texttt{f} & Tomar un recurso de uso exclusivo (\emph{facility}) & $f=$ id de la \emph{facility} & \tabularnewline
-\hline 
- & \texttt{RELEASE} & \texttt{f} & Dejar un recurso de uso exclusivo (\emph{facility}) & $f=$ id de la \emph{facility} & \tabularnewline
-\hline 
- & \texttt{ENTER} & \texttt{s{[},l{]}} & Intentar ocupar uno o más lugares de un recurso de uso compartido
-(\emph{storage}) & \begin{itemize}
-\item $s=$ id del \emph{storage}
-\item $l=$ lugares que ocupa la transacción \end{itemize}
- & $l=1$\tabularnewline
-\hline 
- & \texttt{LEAVE} & \texttt{s{[},l{]}} & Dejar uno o más lugares de un recurso de uso compartido (\emph{storage}).
-No es necesario haber ejecutado \texttt{ENTER} previamente. & \begin{itemize}
-\item $s=$ id del \emph{storage}
-\item $l=$ lugares que deja la transacción\end{itemize}
- & $l=1$\tabularnewline
-\hline 
 \texttt{NSTORAGE} & \texttt{STORAGE} & \texttt{n} & Definir la capacidad de un \emph{storage }en $n$ transacciones & \begin{itemize}
 \item $NSTORAGE=$ identificador del \emph{storage}
 \item $n\in N$, $n<30000$\end{itemize}
