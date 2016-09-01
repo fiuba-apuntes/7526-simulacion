@@ -500,10 +500,10 @@ CHAU    TERMINATE
 
 \begin{bloque}{\bloquetitle{START}}
   \bloquesintax{START n}
-  \accion{Simular $n$ transacciones}
+  \accion{Simular el modelo hasta contabilizar $n$ transacciones terminadas}
   \parametros{
     \begin{description}
-      \item[\paramtitle{n}] cantidad de transacciones
+      \item[\paramtitle{n}] $\in N$, cantidad de transacciones
     \end{description}
   }
 \end{bloque}
@@ -581,7 +581,7 @@ CHAU    TERMINATE
   \accion{Tomar un recurso de uso exclusivo (\emph{facility})}
   \parametros{
     \begin{description}
-      \item[\paramtitle{f}] id de la \emph{facility}
+      \item[\paramtitle{f}] identificador de la \emph{facility}
     \end{description}
   }
 \end{bloque}
@@ -591,7 +591,18 @@ CHAU    TERMINATE
   \accion{Dejar un recurso de uso exclusivo (\emph{facility})}
   \parametros{
     \begin{description}
-      \item[\paramtitle{f}] id de la \emph{facility}
+      \item[\paramtitle{f}] identificador de la \emph{facility}
+    \end{description}
+  }
+\end{bloque}
+
+\begin{bloque}{\bloquetitle{STORAGE}}
+  \bloquesintax{IDSTORAGE STORAGE n}
+  \accion{Definir la capacidad de un \emph{storage} en $n$ transacciones}
+  \parametros{
+    \begin{description}
+      \item[\paramtitle{IDSTORAGE}] identificador del \emph{storage}
+      \item[\paramtitle{n}] $\in N$, $n < 30000$
     \end{description}
   }
 \end{bloque}
@@ -602,7 +613,7 @@ CHAU    TERMINATE
     (\emph{storage})}
   \parametros{
     \begin{description}
-      \item[\paramtitle{s}] id del \emph{storage}
+      \item[\paramtitle{s}] identificador del \emph{storage}
       \item[\paramtitle{l}] lugares que ocupa la transacción
     \end{description}
   }
@@ -619,7 +630,7 @@ CHAU    TERMINATE
     No es necesario haber ejecutado \texttt{ENTER} previamente.}
   \parametros{
     \begin{description}
-      \item[\paramtitle{s}] id del \emph{storage}
+      \item[\paramtitle{s}] identificador del \emph{storage}
       \item[\paramtitle{l}] lugares que deja la transacción
     \end{description}
   }
@@ -630,32 +641,48 @@ CHAU    TERMINATE
   }
 \end{bloque}
 
+\begin{bloque}{\bloquetitle{TRANSFER}}
+  \bloquesintax{TRANSFER [p,[a]],b}
+  \accion{Bifurcar estocásticamente. Con probabilidad $p$ se bifurca a $b$,
+    y con probabilidad $1-p$ se bifurca a $a$. Si $a$ no se especifica,
+    bifurca al bloque siguiente con probabilidad $1-p$. Si ni $p$ ni $a$
+    se especifican, bifurca siempre a $b$}
+  \parametros{
+    \begin{description}
+      \item[\paramtitle{p}] $0 \leq p < 1$, o $p$ es una referencia a una función
+        de $n$ puntos tal que $0 \leq y_{i} < 1000$ $(i=1..n)$
+      \item[\paramtitle{a}] rótulo o referencia a función
+      \item[\paramtitle{b}] rótulo o referencia a función
+    \end{description}
+  }
+  \parametrosdefault{
+    \begin{itemize}
+      \item $p=1$
+    \end{itemize}
+  }
+\end{bloque}
+
+\begin{bloque}{\bloquetitle{TRANSFER}}
+  \bloquesintax{TRANSFER SIM,b,c}
+  \accion{Si el \emph{delay indicator} de la transacción está en ON (set)
+    \textemdash si alguno de los \texttt{GATE/TEST} anteriores no se cumple\textemdash,
+    la transacción es enviada al rótulo $c$ y pone el \emph{delay indicator}
+    en OFF (reset). Si el \emph{delay indicator} está en OFF \textemdash todos
+    los \texttt{GATE/TEST} anteriores se cumplen \textbf{simultáneamente}\textemdash,
+    la transacción es enviada al rótulo $b$.}
+  \parametros{
+    \begin{description}
+      \item[\paramtitle{b}] rótulo o referencia a función
+      \item[\paramtitle{c}] rótulo o referencia a función
+    \end{description}
+  }
+\end{bloque}
+
 \begin{longtable}{|lc>{\raggedright}p{3cm}|>{\raggedright}p{5cm}|>{\raggedright}p{7cm}|>{\raggedright}p{4cm}|}
 \hline
 \multicolumn{3}{|l|}{\textbf{Bloque}} & \textbf{Acción que representa} & \textbf{Parámetros} & \textbf{Default}\tabularnewline
 \hline
 \hline
-\texttt{NSTORAGE} & \texttt{STORAGE} & \texttt{n} & Definir la capacidad de un \emph{storage }en $n$ transacciones & \begin{itemize}
-\item $NSTORAGE=$ identificador del \emph{storage}
-\item $n\in N$, $n<30000$\end{itemize}
- & \tabularnewline
-\hline 
- & \texttt{TRANSFER} & \texttt{{[}p,{[}a{]}{]},b} & Bifurcar estocásticamente. Con probabilidad $p$ se bifurca a $b$,
-y con probabilidad \textbf{$1-p$ }se bifurca a $a$. Si $a$ no se
-especifica, bifurca al bloque siguiente con probabilidad $1-p$. Si
-ni $p$ ni $a$ se especifican, bifurca siempre a $b$ & \begin{itemize}
-\item $0\leq p<1$, o $p$ es una referencia a una función de $n$ puntos
-tal que $0\leq y_{i}<1000$ $(i=1..n)$
-\item $a$ y \textbf{$b$ }son rótulos o referencias a funciones\end{itemize}
- & $p=1$\tabularnewline
-\hline 
- & \texttt{TRANSFER} & \texttt{SIM,b,c} & Si el \emph{delay indicator} de la transacción está en ON (set) \textemdash si
-alguno de los \texttt{GATE/TEST} anteriores no se cumple\textemdash ,
-la transacción es enviada al rótulo $c$ y pone el \emph{delay indicator
-}en OFF (reset). Si el \emph{delay indicator} está en OFF \textemdash todos
-los \texttt{GATE/TEST }anteriores se cumplen \textbf{simultáneamente}\textemdash ,
-la transacción es enviada al rótulo $b$. & $b$ y $c$ son rótulos. & \tabularnewline
-\hline 
  & \texttt{QUEUE} & \texttt{f{[},l{]}} & Hacer cola para la \emph{facility} $f$ & \begin{itemize}
 \item $f=$ id de la \emph{queue}
 \item $l=$ lugares que ocupa la transacción\end{itemize}
@@ -666,8 +693,6 @@ respectiva está definida, registra allí las estadísticas & \begin{itemize}
 \item $f=$ id de la \emph{queue}
 \item $l=$ lugares que deja la transacción \end{itemize}
  & $l=1$\tabularnewline
-\hline 
- & \texttt{START} & \texttt{n} & Simular en el modelo hasta contabilizar $n$ transacciones terminadas & $n\in N$ & \tabularnewline
 \hline 
 \texttt{NTABLE} & \texttt{TABLE} & \texttt{v,x$_{0}$,$\Delta$x,n} & Definir una tabla de distribución de frecuencia. Necesita de \texttt{TABULATE}. & \begin{itemize}
 \item $v=$ valor a tabular de la transacción que ejecuta el \emph{tabulate}
