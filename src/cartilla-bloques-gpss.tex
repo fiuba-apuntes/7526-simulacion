@@ -207,51 +207,93 @@ Define una tabla de distribución de frecuencias para tiempos en cola. No necesi
 \end{itemize} & \tabularnewline
 
 \hline
- & \texttt{ASSIGN} & \texttt{p,v}
+& \texttt{SAVEVALUE} &
+\texttt{s,v}
+
+\texttt{s+,v}
+
+\texttt{s-,v} &
+Asigna, suma o resta el valor $v$ al \emph{savevalue} $s$ &
+\begin{itemize}
+  \item $s=$ identificador del \emph{savevalue} (número o nombre)
+  \item $v=$ valor a asignar, sumar o restar
+\end{itemize} & \tabularnewline
+
+\hline
+& \texttt{INITIAL} & \texttt{s,a} &
+Asigna el valor inicial $a$ al \emph{savevalue} $s$ &
+\begin{itemize}
+  \item $s=$ identificador del \emph{savevalue} (número o nombre)
+  \item $v=$ valor con el que se inicializa
+\end{itemize} & \tabularnewline
+
+\hline
+& \texttt{ASSIGN} &
+\texttt{p,v}
 
 \texttt{p+,v}
 
-\texttt{p-,v} & Asigna, suma o resta el valor $v$ al parámetro $p$ de la transacción
-activa & $p=$ id del parámetro (puede ser un SNA)
+\texttt{p-,v} &
+Asigna, suma o resta el valor $v$ al parámetro $p$ de la transacción activa &
 
-$v=$ valor a asignar, sumar o restar (puede ser una constante o un
-SNA) & \tabularnewline
-\hline 
-\texttt{SELECT} & \texttt{op logico}\footnote{\texttt{Logic Switch: LS, LR}
+\begin{itemize}
+  \item $p=$ identificador del parámetro (puede ser un SNA)
+  \item $v=$ valor a asignar, sumar o restar (puede ser una constante o un SNA)
+\end{itemize} & \tabularnewline
 
-\texttt{Facility: U, NU, I, NI, FV, FNV}
+\hline
+& \texttt{MARK} & \texttt{[p]} &
+Se almacena un M1 ``paralelo'' en el parámetro $p$ de la transacción.
+Si $p$ no se especifica, se reinicializa M1 en cero. &
+$p=$ id del parámetro & $p=M1$ \tabularnewline
 
-\texttt{Storage: SE, SNE, SF, SNF, SV, SNV}} & \texttt{p,v$_{1}$,v$_{2}${[},,,f{]}} & Busca una \emph{facility, storage }o\emph{ logic switch} según el
-\texttt{op logico} y la almacena en el parámetro $p$ de la transacción
-activa. Al finalizar, $v_{1}\leq a\leq v_{2}$ o, si no pudo seleccionar,
-bifurca a $f$. Si $f$ no esta, establece que $p=0$ y continúa en
-el bloque siguiente & \begin{itemize}
-\item $p=$ id del parámetro
-\item $v_{1}=$ número de objeto menor desde el cual se hace el \texttt{SELECT}
-\item $v_{2}=$ número de objeto mayor desde el cual se hace el \texttt{SELECT}
-\item $f=$ rótulo al que bifurca si la selección fue infructuosa\end{itemize}
- & \tabularnewline
-\hline 
-\texttt{SELECT} & \texttt{op relacion}\footnote{\texttt{EQ, L, LE, G, GE, NE}} & \texttt{a,v$_{1}$,v$_{2}$,d,e{[},f{]}} & Busca una objeto $e$ según el \texttt{op relacion }y lo almacena
-en el parámetro $a$ de la transacción activa. Al finalizar, $v_{1}\leq a\leq v_{2}$
-o, si no hay desocupadas, bifurca a $f$. Si $f$ no esta, establece
-que $a=0$ y continúa en el bloque siguiente & \begin{itemize}
-\item $a=$ id del parámetro
-\item $v_{1}=$ número de objeto menor desde el cual se hace el \texttt{SELECT}
-\item $v_{2}=$ número de objeto mayor desde el cual se hace el \texttt{SELECT}
-\item $d=$ valor con el que se compara
-\item $e=$ clase de objeto que se compara (SNAs)
-\item $f=$ rótulo al que bifurca si la selección fue infructuosa\end{itemize}
- & \tabularnewline
-\hline 
-\texttt{SELECT} & \texttt{MIN/MAX} & \texttt{p,v$_{1}$,v$_{2}$,,e} & Busca un\emph{ facility }desocupado según el criterio $e$ y lo almacena
-en $p$. Si el criterio no alcanza para definir, $p=v_{1}$ & \begin{itemize}
-\item $p=$ id del parámetro
-\item $v_{1}=$ número menor del objeto a consultar
-\item $v_{2}=$ número mayor del objeto a consultar
-\item $e=$ clase de objeto en la que se busca el mínimo o máximo\end{itemize}
- & \tabularnewline
-\hline 
+\hline
+\texttt{SELECT} & \texttt{op logico}\footnote{
+  \texttt{Logic Switch: LS, LR}
+
+  \texttt{Facility: U, NU, I, NI, FV, FNV}
+
+  \texttt{Storage: SE, SNE, SF, SNF, SV, SNV}
+} & \texttt{p,v$_{1}$,v$_{2}$[,,,f]} &
+Busca una \emph{facility}, \emph{storage} o \emph{logic switch} según el
+\texttt{op logico} y la almacena en el parámetro $p$ de la transacción activa.
+Al finalizar, $v_{1}\leq a\leq v_{2}$ o, si no pudo seleccionar, bifurca a $f$.
+Si $f$ no esta, establece que $p=0$ y continúa en el bloque siguiente &
+\begin{itemize}
+  \item $p=$ identificador del parámetro
+  \item $v_{1}=$ número de objeto menor desde el cual se hace el \texttt{SELECT}
+  \item $v_{2}=$ número de objeto mayor desde el cual se hace el \texttt{SELECT}
+  \item $f=$ rótulo al que bifurca si la selección fue infructuosa
+\end{itemize} & \tabularnewline
+
+\hline
+\texttt{SELECT} & \texttt{op relacion}\footnote{\texttt{EQ, L, LE, G, GE, NE}} &
+\texttt{a,v$_{1}$,v$_{2}$,d,e{[},f{]}} &
+Busca una objeto $e$ según el \texttt{op relacion} y lo almacena en
+el parámetro $a$ de la transacción activa. Al finalizar, $v_{1} \leq a \leq v_{2}$
+o, si no hay desocupadas, bifurca a $f$. Si $f$ no esta, establece que $a=0$ y
+continúa en el bloque siguiente &
+\begin{itemize}
+  \item $a=$ identificador del parámetro
+  \item $v_{1}=$ número de objeto menor desde el cual se hace el \texttt{SELECT}
+  \item $v_{2}=$ número de objeto mayor desde el cual se hace el \texttt{SELECT}
+  \item $d=$ valor con el que se compara
+  \item $e=$ clase de objeto que se compara (SNAs)
+  \item $f=$ rótulo al que bifurca si la selección fue infructuosa
+\end{itemize} & \tabularnewline
+
+\hline
+\texttt{SELECT} & \texttt{MIN/MAX} & \texttt{p,v$_{1}$,v$_{2}$,,e} &
+Busca un \emph{facility} desocupado según el criterio $e$ y lo almacena en $p$.
+Si el criterio no alcanza para definir, $p=v_{1}$ &
+\begin{itemize}
+  \item $p=$ identificador del parámetro
+  \item $v_{1}=$ número menor del objeto a consultar
+  \item $v_{2}=$ número mayor del objeto a consultar
+  \item $e=$ clase de objeto en la que se busca el mínimo o máximo
+\end{itemize} & \tabularnewline
+
+\hline
 \texttt{NVARIABLE} & \texttt{VARIABLE} & \texttt{f} & Define una función que se evalúa cada vez que una transacción hace
 referencia a ella. Se truncan los decimales de los resultados intermedios
 y del resultado final. & $f=$ función con operadores (cualquier SNA)
@@ -296,17 +338,6 @@ SNAs.}
 \item $n=$ cantidad de puntos que definen la función\end{itemize}
  & \tabularnewline
 \hline 
- & \texttt{SAVEVALUE} & \texttt{s,v}
-
-\texttt{s+,v}
-
-\texttt{s-,v} & Asigna, suma o resta el valor $v$ al \emph{savevalue} $s$ & \begin{itemize}
-\item $s=$ id del \emph{savevalue}
-\item $v=$ valor a asignar, sumar o restar\end{itemize}
- & \tabularnewline
-\hline 
- & \texttt{INITIAL} & \texttt{s{[},a{]}} & Asigna el valor inicial $a$ al \emph{savevalue} $s$ & $s=$ \textbf{referencia} al \emph{savevalue} & ?\tabularnewline
-\hline 
  & \texttt{LOOP} & \texttt{p,a} & Resta 1 al parámetro $p$. Si $p>0$, bifurca al rótulo $a$. Si $p=0$,
 continúa en el bloque siguiente & \begin{itemize}
 \item $p=$ id del parámetro a decrementar
@@ -350,9 +381,6 @@ que representa al grupo, las restantes $a-1$ son destruidas & $a=$ cantidad de m
 \hline 
  & \texttt{GATHER} & \texttt{m} & Reúne un grupo de transacciones y deja pasar a todas una vez reunida
 la cantidad especificada, sin destruir ninguna transacción & $m=$ cantidad de miembros de la familia a reunir & \tabularnewline
-\hline 
- & \texttt{MARK} & \texttt{{[}p{]}} & Se almacena un M1 ``paralelo'' en el parámetro $p$ de la transacción.
-Si $p$ no se especifica, se inicializa M1 en cero. & $p=$ id del parámetro & $p=M1$\tabularnewline
 \hline 
 \texttt{LOGIC} & \texttt{v} & \texttt{ll} & Cambia el estado del \emph{logic switch} $ll$ por el valor de $v$ & \begin{itemize}
 \item $v=$ S (set), R (reset), I (invertido)
