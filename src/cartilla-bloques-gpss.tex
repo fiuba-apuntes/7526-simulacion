@@ -4,10 +4,10 @@
 \usepackage[
   landscape,
   a4paper,
-  top=1.8cm,
+  top=1.4cm,
   bottom=1.8cm,
-  left=0.8cm,
-  right=0.8cm,
+  left=1.3cm,
+  right=1.3cm,
   headsep=0.1cm
 ]{geometry}
 
@@ -22,7 +22,7 @@
 \fancyhead[L]{\quad Cartilla de bloques GPSS}
 
 % Define footer para pagina
-\fancyfoot[L]{\quad FIUBA Apuntes}
+\fancyfoot[L]{\quad }%FIUBA Apuntes}
 \fancyfoot[R]{Página \thepage \quad}
 
 \renewcommand{\footrulewidth}{0.4pt} % Agrego linea que separa el footer
@@ -346,11 +346,19 @@ Si $x \leq x_{1}$, devuelve $y_{1}$, si $x \geq x_{n}$, devuelve $y_{n}$.
 Se truncan los decimales de los resultados intermedios y del resultado final. &
 \begin{itemize}
   \item $x=$ variable independiente (cualquier SNA). Si $x$ es RN, $0<x_{i}\leq1$
-  \item $t=$ tipo de la función ($C=$continua, $D=$discreta, $E=$discreta de atributos numéricos)
-    \footnote{Debe cumplirse que $x_{1}\leq x_{2}\leq...\leq x_{n}$.
-      Si es \textbf{continua}, y $x_{i}<x<x_{i+1}$ se interpola linealmente entre $y_{i}$ e $y_{i+1}$.
-      Si es \textbf{discreta}, y $x_{i}<x<x_{i+1}$, se devuelve $y_{i+1}$ (los $y$ pueden ser rótulos).
-      Si es \textbf{discreta de atributos numéricos}, es como la discreta pero las $y$ deben ser SNAs.}
+  \item $t=$ tipo de la función ($C=$continua, $D=$discreta,
+    $E=$discreta de atributos numéricos)
+    \footnote{
+      Debe cumplirse que $x_{1}\leq x_{2}\leq...\leq x_{n}$.
+      \begin{itemize}
+        \item Si es \textbf{continua}, y $x_{i}<x<x_{i+1}$ se interpola
+          linealmente entre $y_{i}$ e $y_{i+1}$.
+        \item Si es \textbf{discreta}, y $x_{i}<x<x_{i+1}$, se devuelve
+          $y_{i+1}$ (los $y$ pueden ser rótulos).
+        \item Si es \textbf{discreta de atributos numéricos}, es como
+          la discreta pero las $y$ deben ser SNAs.
+      \end{itemize}
+    }
   \item $n=$ cantidad de puntos que definen la función
 \end{itemize} & \tabularnewline
 
