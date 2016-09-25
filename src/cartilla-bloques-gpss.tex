@@ -1,22 +1,31 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage[spanish]{babel}
-\usepackage[landscape,a4paper]{geometry}
-\geometry{
-  verbose,
-  tmargin=1cm,
-  bmargin=1cm,
-  lmargin=1cm,
-  rmargin=1cm,
-  headheight=0cm,
-  headsep=0cm,
-  footskip=0cm
-}
-%\pagestyle{empty}
-%\setcounter{tocdepth}{2}
-%\setlength{\parskip}{\smallskipamount}
-%\setlength{\parindent}{0pt}
-%\usepackage{color}
+\usepackage[
+  landscape,
+  a4paper,
+  top=1.8cm,
+  bottom=1.8cm,
+  left=0.8cm,
+  right=0.8cm,
+  headsep=0.1cm
+]{geometry}
+
+\usepackage{fancyhdr} % Permite personalizar los header y footer del documento.
+
+% Define el pagestyle personalizado
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\sectionmark}[1]{\markboth{}{\thesection\ \ #1}}
+% Define header para pagina
+\fancyhead[R]{Simulación (75.26/95.19)\quad}
+\fancyhead[L]{\quad Cartilla de bloques GPSS}
+
+% Define footer para pagina
+\fancyfoot[L]{\quad FIUBA Apuntes}
+\fancyfoot[R]{Página \thepage \quad}
+
+\renewcommand{\footrulewidth}{0.4pt} % Agrego linea que separa el footer
 
 \addto\shorthandsspanish{\spanishdeactivate{~<>}}
 
@@ -24,12 +33,9 @@
 \usepackage{longtable}
 \usepackage{float}
 \usepackage{multirow}
-%\usepackage[unicode=true,
-% bookmarks=false,
-% breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
-% {hyperref}
-%\hypersetup{pdftitle={Simulación},
-% pdfauthor={María Inés Parnisari}}
+
+\usepackage{enumitem}
+\setlist{leftmargin=5mm, noitemsep, topsep=0pt}
 
 \makeatletter
 
@@ -44,13 +50,14 @@
 
 \begin{document}
 
-\section*{Cartilla de bloques}
-
-\begin{longtable}{|lc>{\raggedright}p{0.13\textwidth}|>{\raggedright}p{0.2\textwidth}|>{\raggedright}p{0.2\textwidth}|>{\raggedright}p{0.2\textwidth}|}
+\begin{longtable}{|lc>{\raggedright}p{0.14\textwidth}|>{\raggedright}p{0.23\textwidth}|>{\raggedright}p{0.23\textwidth}|>{\raggedright}p{0.14\textwidth}|}
 \hline
 \multicolumn{3}{|l|}{\textbf{Bloque}} & \textbf{Acción que representa} & \textbf{Parámetros} & \textbf{Valor por defecto}\tabularnewline
 \hline
 \endhead
+
+\hline
+\multicolumn{6}{c}{\textbf{Ciclo de vida de las transacciones y la simulación}} \tabularnewline
 
 \hline
 & \texttt{START} & \texttt{n} &
@@ -92,12 +99,27 @@ Realización de una tarea que dura cierto tiempo $m \pm d$ o $m \times d$ &
 \end{itemize} \tabularnewline
 
 \hline
+& \texttt{TRANSFER} & \texttt{[p,[a]],b} &
+Bifurcar estocásticamente. Con probabilidad $p$ se bifurca a $b$,
+y con probabilidad \textbf{$1-p$} se bifurca a $a$.
+Si $a$ no se especifica, bifurca al bloque siguiente con probabilidad $1-p$.
+Si ni $p$ ni $a$ se especifican, bifurca siempre a $b$ &
+\begin{itemize}
+  \item $0\leq p<1$, o $p$ es una referencia a una función de $n$ puntos tal que $0 \leq y_{i} < 1000$ $(i=1..n)$
+  \item $a$ y \textbf{$b$} son rótulos o referencias a funciones
+\end{itemize} &
+$p=1$ \tabularnewline
+
+\hline
 & \texttt{TERMINATE} & \texttt{[n]} &
 Salida de $n$ transacciones. Si $n$ no se especifica, no se contabiliza la transacción pero la misma se destruye &
 $n \in N$ & $n=0$ \tabularnewline
 
 \hline
 \pagebreak
+
+\hline
+\multicolumn{6}{c}{\textbf{Facilities, colas, storages y prioridades}} \tabularnewline
 
 \hline
 & \texttt{SEIZE} & \texttt{f} &
@@ -160,26 +182,10 @@ Si la \texttt{QTABLE} respectiva está definida, registra allí las estadística
 $l=1$ \tabularnewline
 
 \hline
-& \texttt{TRANSFER} & \texttt{[p,[a]],b} &
-Bifurcar estocásticamente. Con probabilidad $p$ se bifurca a $b$,
-y con probabilidad \textbf{$1-p$} se bifurca a $a$.
-Si $a$ no se especifica, bifurca al bloque siguiente con probabilidad $1-p$.
-Si ni $p$ ni $a$ se especifican, bifurca siempre a $b$ &
-\begin{itemize}
-  \item $0\leq p<1$, o $p$ es una referencia a una función de $n$ puntos tal que $0 \leq y_{i} < 1000$ $(i=1..n)$
-  \item $a$ y \textbf{$b$} son rótulos o referencias a funciones
-\end{itemize} &
-$p=1$ \tabularnewline
+\pagebreak
 
 \hline
-& \texttt{TRANSFER} & \texttt{SIM,b,c} &
-Si el \emph{delay indicator} de la transacción está en ON (set) \textemdash si
-alguno de los \texttt{GATE/TEST} anteriores no se cumple\textemdash ,
-la transacción es enviada al rótulo $c$ y pone el \emph{delay indicator}
-en OFF (reset). Si el \emph{delay indicator} está en OFF \textemdash todos
-los \texttt{GATE/TEST} anteriores se cumplen \textbf{simultáneamente}\textemdash ,
-la transacción es enviada al rótulo $b$. &
-$b$ y $c$ son rótulos. & \tabularnewline
+\multicolumn{6}{c}{\textbf{Tabulación de datos}} \tabularnewline
 
 \hline
 \texttt{NTABLE} & \texttt{TABLE} & \texttt{v,x$_{0}$,$\Delta$x,n} &
@@ -205,6 +211,9 @@ Define una tabla de distribución de frecuencias para tiempos en cola. No necesi
   \item $\Delta t=$ tamaño de cada intervalo
   \item $n=$ cantidad de intervalos
 \end{itemize} & \tabularnewline
+
+\hline
+\multicolumn{6}{c}{\textbf{Casilleros de memoria y parámetros de las transacciones}} \tabularnewline
 
 \hline
 & \texttt{SAVEVALUE} &
@@ -238,7 +247,7 @@ Asigna, suma o resta el valor $v$ al parámetro $p$ de la transacción activa &
 
 \begin{itemize}
   \item $p=$ identificador del parámetro (puede ser un SNA)
-  \item $v=$ valor a asignar, sumar o restar (puede ser una constante o un SNA)
+  \item $v=$ valor a asignar, sumar o restar (constante o SNA)
 \end{itemize} & \tabularnewline
 
 \hline
@@ -246,6 +255,12 @@ Asigna, suma o resta el valor $v$ al parámetro $p$ de la transacción activa &
 Se almacena un M1 ``paralelo'' en el parámetro $p$ de la transacción.
 Si $p$ no se especifica, se reinicializa M1 en cero. &
 $p=$ id del parámetro & $p=M1$ \tabularnewline
+
+\hline
+\pagebreak
+
+\hline
+\multicolumn{6}{c}{\textbf{Selección de \textit{facilities} y objetos}} \tabularnewline
 
 \hline
 \texttt{SELECT} & \texttt{op logico}\footnote{
@@ -294,98 +309,141 @@ Si el criterio no alcanza para definir, $p=v_{1}$ &
 \end{itemize} & \tabularnewline
 
 \hline
-\texttt{NVARIABLE} & \texttt{VARIABLE} & \texttt{f} & Define una función que se evalúa cada vez que una transacción hace
-referencia a ella. Se truncan los decimales de los resultados intermedios
-y del resultado final. & $f=$ función con operadores (cualquier SNA)
+\pagebreak
 
-\noindent \centering{}%
+\hline
+\multicolumn{6}{c}{\textbf{Variables, funciones, ciclos y tests}} \tabularnewline
+
+\hline
+\texttt{NVARIABLE} & \texttt{VARIABLE} & \texttt{f} &
+Define una función que se evalúa cada vez que una transacción hace referencia a ella.
+Se truncan los decimales de los resultados intermedios y del resultado final. &
+$f=$ función con operadores (cualquier SNA)
+
+\centering
 \begin{tabular}{|c|c|}
-\hline 
-+ & suma\tabularnewline
-\hline 
-\hline 
-- & resta\tabularnewline
-\hline 
-\hline 
-\# & multiplicación\tabularnewline
-\hline 
-\hline 
-/ & división\tabularnewline
-\hline 
-\hline 
-@ & módulo\tabularnewline
-\hline 
-\hline 
-\textasciicircum{} & potencia\tabularnewline
-\hline 
+  \hline
+  + & suma\tabularnewline
+  \hline
+  - & resta\tabularnewline
+  \hline
+  \# & multiplicación\tabularnewline
+  \hline
+  / & división\tabularnewline
+  \hline
+  @ & módulo\tabularnewline
+  \hline
+  \textasciicircum{} & potencia\tabularnewline
+  \hline
 \end{tabular} & \tabularnewline
-\hline 
+
+\hline
 \texttt{NFUNCTION} & \texttt{FUNCTION} & \texttt{x,tn}
 
-\texttt{x$_{1}$,y$_{1}$/.../x$_{n}$,y$_{n}$} & Devuelve un valor cada vez que se la invoca. Define una función de
-$n$ puntos. Si $x\leq x_{1}$, devuelve $y_{1}$, si $x\geq x_{n}$,
-devuelve $y_{n}$. Se truncan los decimales de los resultados intermedios
-y del resultado final. & \begin{itemize}
-\item $x=$ variable independiente (cualquier SNA). Si $x$ es RN, $0<x_{i}\leq1$
-\item $t=$ tipo de la función ($C=$continua, $D=$discreta, $E=$discreta
-de atributos numéricos)
-\footnote{Debe cumplirse que $x_{1}\leq x_{2}\leq...\leq x_{n}$.
-Si es \textbf{continua}, y $x_{i}<x<x_{i+1}$ se interpola linealmente
-entre $y_{i}$ e $y_{i+1}$. Si es \textbf{discreta}, y $x_{i}<x<x_{i+1}$,
-se devuelve $y_{i+1}$ (los $y$ pueden ser rótulos). Si es \textbf{discreta
-de atributos numéricos}, es como la discreta pero las $y$ deben ser
-SNAs.}
-\item $n=$ cantidad de puntos que definen la función\end{itemize}
- & \tabularnewline
-\hline 
- & \texttt{LOOP} & \texttt{p,a} & Resta 1 al parámetro $p$. Si $p>0$, bifurca al rótulo $a$. Si $p=0$,
-continúa en el bloque siguiente & \begin{itemize}
-\item $p=$ id del parámetro a decrementar
-\item $a=$ rótulo al que bifurca\end{itemize}
- & \tabularnewline
-\hline 
-\texttt{NMATRIX} & \texttt{MATRIX} & \texttt{,f,c} & Define una matriz & \begin{itemize}
-\item $f=$ cantidad de filas
-\item $c=$ cantidad de columnas\end{itemize}
- & \tabularnewline
-\hline 
- & \texttt{MSAVEVALUE} & \texttt{m,f,c,v}
+\texttt{x$_{1}$,y$_{1}$/.../x$_{n}$,y$_{n}$} &
+Devuelve un valor cada vez que se la invoca. Define una función de $n$ puntos.
+Si $x \leq x_{1}$, devuelve $y_{1}$, si $x \geq x_{n}$, devuelve $y_{n}$.
+Se truncan los decimales de los resultados intermedios y del resultado final. &
+\begin{itemize}
+  \item $x=$ variable independiente (cualquier SNA). Si $x$ es RN, $0<x_{i}\leq1$
+  \item $t=$ tipo de la función ($C=$continua, $D=$discreta, $E=$discreta de atributos numéricos)
+    \footnote{Debe cumplirse que $x_{1}\leq x_{2}\leq...\leq x_{n}$.
+      Si es \textbf{continua}, y $x_{i}<x<x_{i+1}$ se interpola linealmente entre $y_{i}$ e $y_{i+1}$.
+      Si es \textbf{discreta}, y $x_{i}<x<x_{i+1}$, se devuelve $y_{i+1}$ (los $y$ pueden ser rótulos).
+      Si es \textbf{discreta de atributos numéricos}, es como la discreta pero las $y$ deben ser SNAs.}
+  \item $n=$ cantidad de puntos que definen la función
+\end{itemize} & \tabularnewline
+
+\hline
+& \texttt{LOOP} & \texttt{p,a} &
+Resta 1 al parámetro $p$. Si $p>0$, bifurca al rótulo $a$. Si $p=0$, continúa en el bloque siguiente &
+\begin{itemize}
+  \item $p=$ id del parámetro a decrementar
+  \item $a=$ rótulo al que bifurca
+\end{itemize} & \tabularnewline
+
+\hline
+\texttt{TEST} & \texttt{op} & \texttt{a,b[,f]} &
+Si $a \, op \, b$ es verdadera, continúa en el bloque siguiente.
+Si es falsa, bifurca al rótulo $f$; si es falsa y no se especifico $f$,
+bloquea la transacción hasta que sea verdadera &
+\begin{itemize}
+  \item $op$ puede ser $e$, $ne$, $g$, $ge$, $l$, $le$
+  \item $a$ y $b$ pueden ser constantes o SNAs
+  \item $f=$ rótulo al que bifurca si es falsa
+\end{itemize} & \tabularnewline
+
+\hline
+\pagebreak
+
+\hline
+\multicolumn{6}{c}{\textbf{Familias de transacciones}} \tabularnewline
+
+\hline
+& \texttt{SPLIT} & \texttt{c,r[,n]} &
+Genera $c$ nuevas transacciones, \textquotedblleft clonando \textquotedblright{}
+la transacción activa (M1, PR, parámetros). Las copias bifurcan a $r$ y
+el original continúa en el bloque siguiente &
+\begin{itemize}
+  \item $c=$ cantidad de copias (constante o SNA)
+  \item $r=$ rótulo al que bifurcan las copias
+  \item $n=$ identificador de parámetro a utilizar para enumerar el original y las copias
+\end{itemize} & \tabularnewline
+
+\hline
+& \texttt{ASSEMBLE} & \texttt{a} &
+Reúne un grupo de transacciones y deja pasar solo una transacción
+que representa al grupo, las restantes $a-1$ son destruidas &
+$a=$ cantidad de miembros de la familia a sincronizar & \tabularnewline
+
+\hline
+& \texttt{GATHER} & \texttt{m} &
+Reúne un grupo de transacciones y deja pasar a todas una vez reunida
+la cantidad especificada, sin destruir ninguna transacción &
+$m=$ cantidad de miembros de la familia a reunir & \tabularnewline
+
+\hline
+\multicolumn{6}{c}{\textbf{Matrices}} \tabularnewline
+
+\hline
+\texttt{NMATRIX} & \texttt{MATRIX} & \texttt{,f,c} &
+Define una matriz &
+\begin{itemize}
+  \item $f=$ cantidad de filas
+  \item $c=$ cantidad de columnas
+\end{itemize} & \tabularnewline
+
+\hline
+& \texttt{MSAVEVALUE} & \texttt{m,f,c,v}
 
 \texttt{m+,f,c,v}
 
-\texttt{m-,f,c,v} & Asigna, suma o resta el valor $v$ del elemento $m[f,c]$ & \begin{itemize}
-\item $m=$ id de la matriz
-\item $f=$ fila (cualquier SNA)
-\item $c=$ columna (cualquier SNA)
-\item $v=$ valor a asignar, sumar o restar\end{itemize}
- & \tabularnewline
-\hline 
-\texttt{TEST} & \texttt{op} & \texttt{a,b{[},f{]}} & Si $a\,op\,b$ es V, continúa en el bloque siguiente. Si es F, bifurca
-al rótulo $f$; si es F y no se especifico $f$, bloquea la transacción
-hasta que sea V & \begin{itemize}
-\item $op$ puede ser $e$, $ne$, $g$, $ge$, $l$, $le$
-\item $a$ y $b$ pueden ser constantes o SNAs
-\item $f=$ rótulo al que bifurca\end{itemize}
- & \tabularnewline
-\hline 
- & \texttt{SPLIT} & \texttt{c,r{[},n{]}} & Genera $c$ nuevas transacciones, \textquotedblleft clonando\textquotedblright{}
-la transacción activa (M1, PR, parámetros). Las copias bifurcan a
-$r$ y el original continúa en el bloque siguiente & \begin{itemize}
-\item $c=$ cantidad de copias (constante o SNA)
-\item $r=$ rótulo al que bifurcan las copias
-\item $n=$ id de parámetro a utilizar para enumerar el original y las copias\end{itemize}
- & \tabularnewline
-\hline 
- & \texttt{ASSEMBLE} & \texttt{a} & Reúne un grupo de transacciones y deja pasar solo una transacción
-que representa al grupo, las restantes $a-1$ son destruidas & $a=$ cantidad de miembros de la familia a sincronizar & \tabularnewline
-\hline 
- & \texttt{GATHER} & \texttt{m} & Reúne un grupo de transacciones y deja pasar a todas una vez reunida
-la cantidad especificada, sin destruir ninguna transacción & $m=$ cantidad de miembros de la familia a reunir & \tabularnewline
-\hline 
+\texttt{m-,f,c,v} &
+Asigna, suma o resta el valor $v$ del elemento $m[f,c]$ &
+\begin{itemize}
+  \item $m=$ id de la matriz
+  \item $f=$ fila (cualquier SNA)
+  \item $c=$ columna (cualquier SNA)
+  \item $v=$ valor a asignar, sumar o restar
+\end{itemize} & \tabularnewline
+
+\hline
+\pagebreak
+
+\hline
 \texttt{LOGIC} & \texttt{v} & \texttt{ll} & Cambia el estado del \emph{logic switch} $ll$ por el valor de $v$ & \begin{itemize}
 \item $v=$ S (set), R (reset), I (invertido)
 \item $ll=$ id de la llave\end{itemize}
  & \tabularnewline
+\hline
+& \texttt{TRANSFER} & \texttt{SIM,b,c} &
+Si el \emph{delay indicator} de la transacción está en ON (set) \textemdash si
+alguno de los \texttt{GATE/TEST} anteriores no se cumple\textemdash ,
+la transacción es enviada al rótulo $c$ y pone el \emph{delay indicator}
+en OFF (reset). Si el \emph{delay indicator} está en OFF \textemdash todos
+los \texttt{GATE/TEST} anteriores se cumplen \textbf{simultáneamente}\textemdash ,
+la transacción es enviada al rótulo $b$. &
+$b$ y $c$ son rótulos. & \tabularnewline
 \hline 
  & \texttt{INITIAL} & \texttt{rll{[},v{]}} & Inicializa el estado de la llave $rll$ con el valor $v$. & \begin{itemize}
 \item $rll=$\textbf{ referencia} a una llave lógica
