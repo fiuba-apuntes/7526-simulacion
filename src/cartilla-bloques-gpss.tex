@@ -448,14 +448,14 @@ Asigna, suma o resta el valor $v$ del elemento $m[f,c]$ &
 Cambia el estado del \emph{logic switch} $l$ por el valor de $v$ &
 \begin{itemize}
   \item $v=$ S (set), R (reset), I (invertido)
-  \item $ll=$ id de la llave
+  \item $l=$ identificador de la llave
 \end{itemize} & \tabularnewline
 
 \hline
 & \texttt{INITIAL} & \texttt{l[,v]} &
 Inicializa el estado de la llave $l$ con el valor $v$. &
 \begin{itemize}
-  \item $rll=$\textbf{ referencia} a una llave lógica
+  \item $l=$ \textbf{referencia} a una llave lógica
   \item $v=$ 1 (set), 0 (reset)
 \end{itemize} &
 $v=1$(set) \tabularnewline
@@ -467,7 +467,7 @@ rótulo $a$. Si $op\,A$ es V, continúa en el bloque siguiente.
 Si es F, bifurca a $f$. Si no se especifica $f$, la transacción
 se bloquea hasta que sea V (\emph{delay indicator} en ON) &
 \begin{itemize}
-  \item $a=$ id del \emph{logic switch}, \emph{facility}, \emph{storage}
+  \item $a=$ identificador del \emph{logic switch}, \emph{facility}, \emph{storage}
   \item $f=$ rótulo al que bifurca si la condición es falsa.
 \end{itemize} & \tabularnewline
 
