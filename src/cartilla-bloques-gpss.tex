@@ -48,6 +48,14 @@
 
 \makeatother
 
+\newcommand{\oplogicfootnote}{\footnote{
+  \texttt{Logic Switch: LS, LR}
+
+  \texttt{Facility: U, NU, I, NI, FV, FNV}
+
+  \texttt{Storage: SE, SNE, SF, SNF, SV, SNV}
+}}
+
 \begin{document}
 
 \begin{longtable}{|lc>{\raggedright}p{0.14\textwidth}|>{\raggedright}p{0.23\textwidth}|>{\raggedright}p{0.23\textwidth}|>{\raggedright}p{0.14\textwidth}|}
@@ -263,13 +271,7 @@ $p=$ id del parámetro & $p=M1$ \tabularnewline
 \multicolumn{6}{c}{\textbf{Selección de \textit{facilities} y objetos}} \tabularnewline
 
 \hline
-\texttt{SELECT} & \texttt{op logico}\footnote{
-  \texttt{Logic Switch: LS, LR}
-
-  \texttt{Facility: U, NU, I, NI, FV, FNV}
-
-  \texttt{Storage: SE, SNE, SF, SNF, SV, SNV}
-} & \texttt{p,v$_{1}$,v$_{2}$[,,,f]} &
+\texttt{SELECT} & \texttt{op logico}\oplogicfootnote & \texttt{p,v$_{1}$,v$_{2}$[,,,f]} &
 Busca una \emph{facility}, \emph{storage} o \emph{logic switch} según el
 \texttt{op logico} y la almacena en el parámetro $p$ de la transacción activa.
 Al finalizar, $v_{1}\leq a\leq v_{2}$ o, si no pudo seleccionar, bifurca a $f$.
@@ -439,232 +441,314 @@ Asigna, suma o resta el valor $v$ del elemento $m[f,c]$ &
 \pagebreak
 
 \hline
-\texttt{LOGIC} & \texttt{v} & \texttt{ll} & Cambia el estado del \emph{logic switch} $ll$ por el valor de $v$ & \begin{itemize}
-\item $v=$ S (set), R (reset), I (invertido)
-\item $ll=$ id de la llave\end{itemize}
- & \tabularnewline
+\multicolumn{6}{c}{\textbf{Llaves lógicas}} \tabularnewline
+
+\hline
+\texttt{LOGIC} & \texttt{v} & \texttt{l} &
+Cambia el estado del \emph{logic switch} $l$ por el valor de $v$ &
+\begin{itemize}
+  \item $v=$ S (set), R (reset), I (invertido)
+  \item $ll=$ id de la llave
+\end{itemize} & \tabularnewline
+
+\hline
+& \texttt{INITIAL} & \texttt{l[,v]} &
+Inicializa el estado de la llave $l$ con el valor $v$. &
+\begin{itemize}
+  \item $rll=$\textbf{ referencia} a una llave lógica
+  \item $v=$ 1 (set), 0 (reset)
+\end{itemize} &
+$v=1$(set) \tabularnewline
+
+\hline
+\texttt{GATE} & \texttt{op logico}\oplogicfootnote & \texttt{a[,f]} &
+Consulta el estado del \emph{logic switch}, \emph{facility}, \emph{storage} o
+rótulo $a$. Si $op\,A$ es V, continúa en el bloque siguiente.
+Si es F, bifurca a $f$. Si no se especifica $f$, la transacción
+se bloquea hasta que sea V (\emph{delay indicator} en ON) &
+\begin{itemize}
+  \item $a=$ id del \emph{logic switch}, \emph{facility}, \emph{storage}
+  \item $f=$ rótulo al que bifurca si la condición es falsa.
+\end{itemize} & \tabularnewline
+
 \hline
 & \texttt{TRANSFER} & \texttt{SIM,b,c} &
-Si el \emph{delay indicator} de la transacción está en ON (set) \textemdash si
-alguno de los \texttt{GATE/TEST} anteriores no se cumple\textemdash ,
+Si el \emph{delay indicator} de la transacción está en ON (set) \textemdash
+si alguno de los \texttt{GATE/TEST} anteriores no se cumple\textemdash,
 la transacción es enviada al rótulo $c$ y pone el \emph{delay indicator}
-en OFF (reset). Si el \emph{delay indicator} está en OFF \textemdash todos
-los \texttt{GATE/TEST} anteriores se cumplen \textbf{simultáneamente}\textemdash ,
+en OFF (reset). Si el \emph{delay indicator} está en OFF \textemdash todos los
+\texttt{GATE/TEST} anteriores se cumplen \textbf{simultáneamente} \textemdash,
 la transacción es enviada al rótulo $b$. &
 $b$ y $c$ son rótulos. & \tabularnewline
-\hline 
- & \texttt{INITIAL} & \texttt{rll{[},v{]}} & Inicializa el estado de la llave $rll$ con el valor $v$. & \begin{itemize}
-\item $rll=$\textbf{ referencia} a una llave lógica
-\item $v=$ 1 (set), 0 (reset)\end{itemize}
- & $v=1$(set)\tabularnewline
-\hline 
-\texttt{GATE} & \texttt{op lógico\ref{op_logicos}} & \texttt{a{[},f{]}} & Consulta el estado del \emph{logic switch}, \emph{facility}, \emph{storage}
-o rótulo $a$. Si $op\,A$ es V, continúa en el bloque siguiente.
-Si es F, bifurca a $f$. Si no se especifica $f$, la transacción
-se bloquea hasta que sea V (\emph{delay indicator }en ON) & \begin{itemize}
-\item $a=$ id del \emph{logic switch}, \emph{facility}, \emph{storage}
-\item $f=$ rótulo al que bifurca si la condición es falsa.\end{itemize}
- & \tabularnewline
-\hline 
-\texttt{COUNT} & \texttt{op logico}\footnote{\label{op_logicos}Logic Switch: LS, LR
 
-Facility: U, NU, I, NI, FV, FNV
+\hline
+\pagebreak
 
-Storage: SE, SNE, SF, SNF, SV, SNV} & \texttt{a,v$_{1}$,v$_{2}$} & Cuenta la cantidad de objetos desde $v_{1}$ hasta $v_{2}$ que cumplen
-la condición $op\,objeto$, y lo almacena en $a$. & \begin{itemize}
-\item $a=$ parámetro que recibe la cantidad de objetos que cumplen la condición
-\item $v_{1}=$ número menor del objeto a consultar
-\item $v_{2}=$ número mayor del objeto a consultar\end{itemize}
- & \tabularnewline
+\hline
+\multicolumn{6}{c}{\textbf{Conteo (similar a \texttt{SELECT})}} \tabularnewline
+
+\hline
+\texttt{COUNT} & \texttt{op logico}\oplogicfootnote & \texttt{p,v$_{1}$,v$_{2}$} &
+Cuenta la cantidad de objetos desde $v_{1}$ hasta $v_{2}$ que cumplen
+la condición $op$, y lo almacena en el parámetro $p$. &
+\begin{itemize}
+  \item $p=$ parámetro que recibe la cantidad de objetos que cumplen la condición
+  \item $v_{1}=$ número menor del objeto a consultar
+  \item $v_{2}=$ número mayor del objeto a consultar
+\end{itemize} & \tabularnewline
+
+\hline
+\texttt{COUNT} & \texttt{op relacion}\footnote{\texttt{EQ, L, LE, G, GE, NE}} & \texttt{p,v$_{1}$,v$_{2}$,d,e} &
+Cuenta la cantidad de objetos desde $v_{1}$ hasta $v_{2}$ que cumplen
+la condición $objeto\,op\,d$, y lo almacena en el parámetro $p$. &
+\begin{itemize}
+  \item $p=$ parámetro que recibe la cantidad de objetos que cumple la condición
+  \item $v_{1}=$ número menor del objeto a consultar
+  \item $v_{2}=$ número mayor del objeto a consultar
+  \item $d=$ valor con el que se compara
+  \item $e=$ clase de objeto que se selecciona (SNA)
+\end{itemize} & \tabularnewline
+
 \hline 
-\texttt{COUNT} & \texttt{op relacion}\footnote{\texttt{EQ, L, LE, G, GE, NE}} & \texttt{a,v$_{1}$,v$_{2}$,d,e} & Cuenta la cantidad de objetos desde $v_{1}$ hasta $v_{2}$ que cumplen
-la condición $objeto\,op\,d$, y lo almacena en $a$. & \begin{itemize}
-\item $a=$ parámetro que recibe la cantidad de objetos que cumple la condición
-\item $v_{1}=$ número menor del objeto a consultar
-\item $v_{2}=$ número mayor del objeto a consultar
-\item $d=$ valor con el que se compara
-\item $e=$ clase de objeto que se selecciona (SNA)\end{itemize}
- & \tabularnewline
-\hline 
-\texttt{COUNT} & \texttt{MIN/MAX} & \texttt{a,v$_{1}$,v$_{2}$,,e} & Cuenta la cantidad de objetos desde $v_{1}$ hasta $v_{2}$ que son
-mínimo o máximo, y lo almacena en $a$. & \begin{itemize}
-\item $a=$ parámetro que recibe la cantidad de objetos que son mínimo o
+\texttt{COUNT} & \texttt{MIN/MAX} & \texttt{p,v$_{1}$,v$_{2}$,,e} &
+Cuenta la cantidad de objetos desde $v_{1}$ hasta $v_{2}$ que son
+mínimo o máximo, y lo almacena en el parámetro $p$. &
+\begin{itemize}
+  \item $p=$ parámetro que recibe la cantidad de objetos que son mínimo o
 máximo
-\item $v_{1}=$ número menor del objeto a consultar
-\item $v_{2}=$ número mayor del objeto a consultar
-\item $e=$ clase de objeto que se compara (SNA)\end{itemize}
- & \tabularnewline
-\hline 
- & \texttt{JOIN} & \texttt{g} & La transacción activa se une al grupo $g$ ``personalmente''. & $g=$ id del grupo. & \tabularnewline
-\hline 
- & \texttt{EXAMINE} & \texttt{g,,f} & Verifica si la transacción activa pertenece al grupo $g$. Si pertenece,
-continúa en el bloque siguiente. Si no, bifurca a $f$. & \begin{itemize}
-\item $g=$ id del grupo.
-\item $f=$ rótulo al que bifurca.\end{itemize}
- & \tabularnewline
-\hline 
- & \texttt{REMOVE} & \texttt{g} & La transacción activa se elimina al grupo $g$ ``personalmente''. & $g=$ id del grupo. & \tabularnewline
-\hline 
-\texttt{REMOVE} & \texttt{{[}op{]}}\footnote{\texttt{E,G,GE,L,LE,MAX,MIN,NE}} & \texttt{g,{[}c{]},,{[}p{]},{[}v{]},{[}f{]}} & Intenta eliminar $c$ transacciones del grupo $g$ que cumplen la
-condición $p\,op\,v$. Si no puede eliminar todas, bifurca a $f$.  & \begin{itemize}
-\item $g=$ id del grupo
-\item $c=$cantidad de transacciones a eliminar
-\item $p=$ idel parámetro que se consulta de la transacción
-\item $v=$valor con el que se compara (no se pone si $op=MIN/MAX$)
-\item $f=$rótulo al que bifurca si no pudo eliminar $c$ transacciones\end{itemize}
- & $op=E$
+  \item $v_{1}=$ número menor del objeto a consultar
+  \item $v_{2}=$ número mayor del objeto a consultar
+  \item $e=$ clase de objeto que se compara (SNA)
+\end{itemize} & \tabularnewline
 
-$c=ALL$\tabularnewline
-\hline 
-\texttt{ALTER} & \texttt{{[}op{]}}\footnote{\texttt{E,G,GE,L,LE,NE}} & \multirow{1}{3cm}{\texttt{g,c,p$_{1}$,v$_{1}$,{[}p$_{2}${]},{[}v$_{2}${]},{[}f{]}}} & Intenta alterar $c$ transacciones del grupo $g$ de la siguiente
-forma: para cada transacción, si $p_{2}\,op\,v_{2}$ es V, se asigna
-$p_{1}=v_{1}$. Si no puede alterar $c$ transacciones, bifurca al
-rótulo $f$. & \begin{itemize}
-\item $g=$ id del grupo
-\item $c=$ cantidad de transacciones a eliminar\footnote{$c$ puede ser \texttt{ALL}}
-\item $p_{1}=$ id del parámetro a alterar
-\item $v_{1}=$valor a asignar al parámetro $p_{1}$ (constante o SNA)
-\item $p_{2}=$ id del parámetro a consultar
-\item $v_{2}=$ valor con el que se compara $p_{2}$ (constante o SNA)
-\item $f=$rótulo al que bifurca si no pudo alterar $c$ transacciones\end{itemize}
- & $op=E$\tabularnewline
-\hline 
-\texttt{SCAN} & \texttt{{[}op{]}} & \texttt{g,b,{[}c{]},p$_{1}$,p$_{2}${[},f{]}} & Busca en el grupo $g$ la \textbf{primera} transacción que cumple
+\hline
+\pagebreak
+
+\hline
+\multicolumn{6}{c}{\textbf{Cadenas de usuarios}} \tabularnewline
+
+\hline
+& \texttt{LINK} & \texttt{c,r[,f]} &
+Encadena la transacción pasiva actual a la cadena $c$ según la regla $r$.
+Si se especifica el rótulo $f$, la primera transacción \textbf{no es encadenada}
+y bifurca al rótulo $f$. &
+\begin{itemize}
+  \item $c=$ identificador de la cadena (constante o SNA)
+  \item $r=$ regla por la cual se encadena (FIFO, LIFO, PR, Pn, M1)
+  \item $f=$ rótulo al que va la primera transacción
+\end{itemize} & \tabularnewline
+
+\hline
+\texttt{UNLINK} & \texttt{[op]} & \texttt{a,b,c,[d],[e],[f]} &
+La transacción activa actual desencadena $c$ transacciones de la cadena $a$
+tales que se verifique $d\,op\,e$, y las envía al rótulo $b$.
+Si no puede liberar todas, bifurca a $f$ (las que fueron liberadas,
+quedan liberadas). &
+\begin{itemize}
+  \item $op$ puede ser \texttt{E,G,GE,L,LE,NE}
+  \item $a=$ identificador de la cadena
+  \item $b=$ rótulo al que se envían las transacciones liberadas
+  \item $c=$ cantidad de transacciones que se desencadenan\footnote{$c$ puede ser \texttt{ALL}}
+  \item $d=$ identificador de parámetro de la transacción\textbf{ activa} que se consulta
+  \item $e=$ \textbf{referencia} del parámetro de la transacción \textbf{pasiva} que se consulta
+  \item $f=$ rótulo al que bifurca la transacción activa si no pudo liberar $c$ transacciones.
+\end{itemize} &
+\begin{itemize}
+  \item $op=E$
+\end{itemize} \tabularnewline
+
+\hline
+& \texttt{BUFFER} &  &
+La transacción actual se coloca como última transacción a mover en la CEC.
+Detiene a la misma sin que pase el tiempo. &  & \tabularnewline
+
+\hline
+\pagebreak
+
+\hline
+\multicolumn{6}{c}{\textbf{Grupos de transacciones}} \tabularnewline
+
+\hline
+& \texttt{JOIN} & \texttt{g} &
+La transacción se une al grupo $g$ ``personalmente''. &
+$g=$ identificador del grupo. & \tabularnewline
+
+\hline
+& \texttt{REMOVE} & \texttt{g} &
+La transacción se elimina del grupo $g$ ``personalmente''. &
+$g=$ identificador del grupo. & \tabularnewline
+
+\hline
+\texttt{REMOVE} & \texttt{[op]}\footnote{\texttt{E,G,GE,L,LE,MAX,MIN,NE}} & \texttt{g,[c],,[p],[v],[f]} &
+Intenta eliminar $c$ transacciones del grupo $g$ que cumplen la
+condición $p\,op\,v$. Si no puede eliminar todas, bifurca a $f$. &
+\begin{itemize}
+  \item $g=$ identificador del grupo
+  \item $c=$ cantidad de transacciones a eliminar
+  \item $p=$ identificador del parámetro que se consulta de la transacción
+  \item $v=$ valor con el que se compara (no se pone si $op=MIN/MAX$)
+  \item $f=$ rótulo al que bifurca si no pudo eliminar $c$ transacciones
+\end{itemize} &
+\begin{itemize}
+  \item $op=E$
+  \item $c=ALL$
+\end{itemize} \tabularnewline
+
+\hline
+& \texttt{EXAMINE} & \texttt{g,,f} &
+Verifica si la transacción activa pertenece al grupo $g$. Si pertenece,
+continúa en el bloque siguiente. Si no, bifurca a $f$. &
+\begin{itemize}
+  \item $g=$ identificador del grupo.
+  \item $f=$ rótulo al que bifurca.
+\end{itemize} & \tabularnewline
+
+\hline
+\texttt{ALTER} & \texttt{[op]}\footnote{\texttt{E,G,GE,L,LE,NE}} &
+\texttt{g,c,p$_{1}$,v$_{1}$,[p$_{2}$],[v$_{2}$],[f]} &
+Intenta alterar $c$ transacciones del grupo $g$ de la siguiente forma:
+para cada transacción, si $p_{2}\,op\,v_{2}$ es V, se asigna $p_{1}=v_{1}$.
+Si no puede alterar $c$ transacciones, bifurca al rótulo $f$. &
+\begin{itemize}
+  \item $g=$ identificador del grupo
+  \item $c=$ cantidad de transacciones a eliminar\footnote{$c$ puede ser \texttt{ALL}}
+  \item $p_{1}=$ identificador del parámetro a alterar
+  \item $v_{1}=$ valor a asignar al parámetro $p_{1}$ (constante o SNA)
+  \item $p_{2}=$ identificador del parámetro a consultar
+  \item $v_{2}=$ valor con el que se compara $p_{2}$ (constante o SNA)
+  \item $f=$ rótulo al que bifurca si no pudo alterar $c$ transacciones
+\end{itemize} &
+$op=E$\tabularnewline
+
+\hline
+\texttt{SCAN} & \texttt{[op]} & \texttt{g,b,[c],p$_{1}$,p$_{2}$[,f]} &
+Busca en el grupo $g$ la \textbf{primera} transacción que cumple
 la condición $b\,op\,c$. Copia el parámetro $p_{1}$ en el parámetro
-$p_{2}$ de la transacción actual. Si no encuentra ninguna, bifurca
-a $f$. & \begin{itemize}
-\item $OP$ puede ser $e,g,ge,l,le,max,min,ne$
-\item $b=$ id del parámetro que se consulta
-\item $c=$ valor con el que se compara (si $OP$ es $min/max$, no se pone)
-\item $p_{1}=$ id del parámetro de la transacción del grupo que se copia
-\item $p_{2}=$ id del parámetro de la transacción actual que recibe el
-valor de $p_{1}$\end{itemize}
- & \begin{itemize}
-\item $op=E$\end{itemize}
-\tabularnewline
-\hline 
- & \texttt{LINK} & \texttt{c,r{[},f{]}} & Encadena la transacción pasiva actual a la cadena $c$ según la regla
-$r$. Si se especifica el rótulo $f$, la primera transacción \textbf{no
-es encadenada} y bifurca al rótulo $f$. & \begin{itemize}
-\item $c=$ id de la cadena (constante o SNA)
-\item $r=$ regla por la cual se encadena (FIFO, LIFO, PR, Pn, M1)
-\item $f=$ rótulo al que va la primera transacción\end{itemize}
- & \tabularnewline
-\hline 
-\texttt{UNLINK} & \texttt{{[}op{]}} & \texttt{a,b,c,{[}d{]},{[}e{]},{[}f{]}} & La transacción activa actual desencadena $c$ transacciones de la
-cadena $a$ tales que se verifique $d\,op\,e$, y las envía al rótulo
-$b$. Si no puede liberar todas, bifurca a $f$ (las que fueron liberadas,
-quedan liberadas). & \begin{itemize}
-\item $op$ puede ser \texttt{E,G,GE,L,LE,NE}
-\item $a=$ id de la cadena
-\item $b=$ rótulo al que se envían las transacciones liberadas
-\item $c=$ cantidad de transacciones que se desencadenan\footnote{$c$ puede ser \texttt{ALL}}
-\item $d=$ id de parámetro de la transacción\textbf{ activa} que se consulta
-\item $e=$\textbf{ referencia} del parámetro de la transacción \textbf{pasiva}
-que se consulta
-\item $f=$ rótulo al que bifurca la transacción activa si no pudo liberar
-$c$ transacciones.\end{itemize}
- & \begin{itemize}
-\item $op=E$\end{itemize}
-\tabularnewline
-\hline 
- & \texttt{BUFFER} &  & La transacción actual se coloca como última transacción a mover en
-la CEC. Detiene a la misma sin que pase el tiempo. &  & \tabularnewline
-\hline 
- & \texttt{PREEMPT} & \texttt{a} & La transacción actual arrebata la \emph{facility} $a$ que ha sido
-tomada por un \texttt{SEIZE}, sin importar las prioridades. Si fue
-tomada por otro \texttt{PREEMPT}, \textbf{no }la arrebata. Interrumpe
-el \texttt{ADVANCE} del\emph{ owner} de la \emph{facility.} & $a=$ id de \emph{facility }a intentar arrebatar & \tabularnewline
-\hline 
- & \texttt{PREEMPT} & \texttt{a,PR{[},c,d{[},RE{]}{]}} & El arrebato se produce sólo si el \emph{owner} de la \emph{facility
-$a$ }tiene menos prioridad que la transacción actual. Si se especifica
-\texttt{RE}, el arrebato es definitivo. & $a=$ id de \emph{facility }a intentar arrebatar
+$p_{2}$ de la transacción actual. Si no encuentra ninguna, bifurca a $f$. &
+\begin{itemize}
+  \item $op$ puede ser \texttt{E, NE, G, GE, L, LE, MAX, MIN}
+  \item $b=$ identificador del parámetro que se consulta
+  \item $c=$ valor con el que se compara (si $op$ es \texttt{MIN/MAX}, no se pone)
+  \item $p_{1}=$ identificador del parámetro de la transacción del grupo que se copia
+  \item $p_{2}=$ identificador del parámetro de la transacción actual que recibe el valor de $p_{1}$
+\end{itemize} &
+\begin{itemize}
+  \item $op=E$
+\end{itemize} \tabularnewline
 
-$c=$ rótulo al que bifurca el \emph{owner} si estaba ejecutando un
-\texttt{ADVANCE}
+\hline
+\multicolumn{6}{c}{\textbf{Grupo de números}} \tabularnewline
 
-$d=$ id del parámetro del \emph{owner} donde se almacena el tiempo
-remanente del \emph{owner }para terminar el \texttt{ADVANCE} & \tabularnewline
-\hline 
- & \texttt{RETURN} & \texttt{a} & Retorno de recurso $a$ al \emph{owner }de dicha \emph{facility} &  & \tabularnewline
-\hline 
- & \texttt{FUNAVAIL} & \multirow{1}{3cm}{\texttt{a,{[}b{]},{[}c{]},{[}d{]},{[}e{]},f,{[}g{]},h}} & Rotura de \emph{facility} $a$. El owner de la \emph{facility} bifurca
+\hline
+& \texttt{JOIN} & \texttt{g,n} &
+Unir el número $n$ al grupo numérico $g$ &
+\begin{itemize}
+  \item $g$= identificador del grupo \textbf{numérico} o SNA
+  \item $n=$ constante o SNA que se une al grupo
+\end{itemize}
+& \tabularnewline
+
+\hline
+& \texttt{REMOVE} & \texttt{g,,n[,,,f]} &
+Remover al número $n$ del grupo numérico $g$. Si no pertenece, bifurca a $f$ &
+\begin{itemize}
+  \item $g$= identificador del grupo \textbf{numérico} o SNA
+  \item $n=$ constante o SNA que se intenta eliminar del grupo
+  \item $f=$ rótulo al que bifurca si $n$ no pertenece al grupo
+\end{itemize} & \tabularnewline
+
+\hline
+& \texttt{EXAMINE} & \texttt{g,n,f} &
+Si el número $n$ pertenece al grupo numérico $g$, continúa en el bloque
+siguiente. Si no, bifurca a $f$ &
+\begin{itemize}
+  \item $g$= identificador del grupo \textbf{numérico} o SNA
+  \item $n=$ constante o SNA que se desea encontrar en el grupo
+  \item $f=$ rótulo al que bifurca si $n$ no pertenece al grupo
+\end{itemize}
+& \tabularnewline
+
+\hline
+\pagebreak
+
+\hline
+\multicolumn{6}{c}{\textbf{Arrebato de \textit{facilities}}} \tabularnewline
+
+\hline
+& \texttt{PREEMPT} & \texttt{f} &
+La transacción actual arrebata la \emph{facility} $f$ que ha sido tomada por
+un \texttt{SEIZE}, sin tener en cuenta las prioridades de las transacciones.
+Si fue tomada por otro \texttt{PREEMPT}, \textbf{no} la arrebata. Interrumpe
+el \texttt{ADVANCE} del \emph{owner} de la \emph{facility}. &
+$f=$ identificador de \emph{facility} a intentar arrebatar & \tabularnewline
+
+\hline
+& \texttt{PREEMPT} & \texttt{f,PR[,c,d[,RE]]} &
+El arrebato se produce sólo si el \emph{owner} de la \emph{facility $f$} tiene
+menos prioridad que la transacción actual. Si se especifica \texttt{RE}, el
+arrebato es definitivo. &
+\begin{itemize}
+  \item $f=$ identificador de \emph{facility} a intentar arrebatar
+  \item $c=$ rótulo al que bifurca el \emph{owner} si estaba ejecutando un \texttt{ADVANCE}
+  \item $d=$ identificador del parámetro del \emph{owner} donde se almacena el tiempo remanente del \emph{owner} para terminar el \texttt{ADVANCE}
+\end{itemize} & \tabularnewline
+
+\hline
+& \texttt{RETURN} & \texttt{f} &
+Retorno de la \emph{facility} $f$ al \emph{owner} anterior &  & \tabularnewline
+
+\hline
+\pagebreak
+
+\hline
+\multicolumn{6}{c}{\textbf{Rotura de \textit{facilities}}} \tabularnewline
+
+\hline
+& \texttt{FUNAVAIL} & \texttt{a,[b],[c],[d],[e],f,[g],h} &
+Rotura de \emph{facility} $a$. El owner de la \emph{facility} bifurca
 al rótulo $c$. Las transacciones que fueron interrumpidas bifurcan
 al rótulo $f$. Las transacciones que están en la \emph{delay chain}
-o \emph{pending chain} de $a$ bifurcan al rótulo $h$. & \begin{itemize}
-\item $a=$ id de \emph{facility}
-\item $b=RE$ (el \emph{owner }de la \emph{facility} la deja definitivamente)
-o $CO$ (el owner continúa en poder de la \emph{facility})
-\item $c$ es obligatorio si $b=RE$
-\item $d=$ parámetro del \emph{owner} de la \emph{facility} donde se guarda
-el tiempo remanente del \texttt{ADVANCE} que estuviera ejecutando.
-\item $e=RE$ (las transacciones interrumpidas la dejan definitivamente)
-o $CO$ (el owner continúa en poder de la \emph{facility})
-\item $f$ es obligatorio si $e=RE$
-\item $g=RE$ (las transacciones en la \emph{delay chain} o \emph{pending
-chain} abandonan la idea de tomar $a$) o $CO$ (abandonan la \emph{delay
-chain} o \emph{pending chain})
-\item si $h$ es usado, $g$ debe ser $RE$\end{itemize}
- & \tabularnewline
-\hline 
- & \texttt{FAVAIL} & \texttt{a} & Arreglo de \emph{facility} $a$ &  & \tabularnewline
-\hline 
- & \texttt{SUNAVAIL} & \texttt{a} & Rotura de \emph{storage $a$} &  & \tabularnewline
-\hline 
- & \texttt{SAVAIL} & \texttt{a} & Arreglo de \emph{storage $a$} &  & \tabularnewline
-\hline 
- & \texttt{MATCH} & \texttt{a} & Sincronizar el movimiento de transacciones de la misma familia. & $a=$ rótulo para ser testeado por transacciones iguales. & \tabularnewline
-\hline 
- & \texttt{JOIN} & \texttt{g,n} & Unir el número $n$ al grupo numérico $g$ & \begin{itemize}
-\item $g$= id del grupo \textbf{numérico} o SNA
-\item $n=$constante o SNA\end{itemize}
- & \tabularnewline
-\hline 
- & \texttt{REMOVE} & \texttt{g,,n{[},,,f{]}} & Remover al número $n$ del grupo numérico $g$. Si no pertenece, bifurca
-a $f$ & \begin{itemize}
-\item $g$= id del grupo \textbf{numérico} o SNA
-\item $n=$constante o SNA\end{itemize}
- & \tabularnewline
-\hline 
- & \texttt{EXAMINE} & \texttt{g,n,f} & Si el número $n$ pertenece al grupo numérico $g$, continúa en el
-bloque siguiente. Si no, bifurca a $f$ & \begin{itemize}
-\item $g$= id del grupo \textbf{numérico} o SNA
-\item $n=$constante o SNA\end{itemize}
- & \tabularnewline
-\hline 
+o \emph{pending chain} de $a$ bifurcan al rótulo $h$. &
+\begin{itemize}
+  \item $a=$ identificador de \emph{facility}
+  \item $b=RE$ (el \emph{owner} de la \emph{facility} la deja definitivamente)
+    o $CO$ (el owner continúa en poder de la \emph{facility})
+  \item $c$ es obligatorio si $b=RE$
+  \item $d=$ parámetro del \emph{owner} de la \emph{facility} donde se guarda
+    el tiempo remanente del \texttt{ADVANCE} que estuviera ejecutando.
+  \item $e=RE$ (las transacciones interrumpidas la dejan definitivamente)
+    o $CO$ (el owner continúa en poder de la \emph{facility})
+  \item $f$ es obligatorio si $e=RE$
+  \item $g=RE$ (las transacciones en la \emph{delay chain} o \emph{pending
+    chain} abandonan la idea de tomar $a$) o $CO$ (abandonan la \emph{delay
+    chain} o \emph{pending chain})
+  \item si $h$ es usado, $g$ debe ser $RE$
+\end{itemize} & \tabularnewline
+
+\hline
+& \texttt{FAVAIL} & \texttt{a} &
+Arreglo de \emph{facility} $a$ &  & \tabularnewline
+
+\hline
+\multicolumn{6}{c}{\textbf{Rotura de \textit{storages}}} \tabularnewline
+
+\hline
+& \texttt{SUNAVAIL} & \texttt{a} &
+Rotura de \emph{storage $a$} &  & \tabularnewline
+
+\hline
+& \texttt{SAVAIL} & \texttt{a} &
+Arreglo de \emph{storage $a$} &  & \tabularnewline
+
+\hline
+\multicolumn{6}{c}{\textbf{Sincronización de transacciones (de la misma familia)}} \tabularnewline
+
+\hline
+& \texttt{MATCH} & \texttt{a} &
+Sincronizar el movimiento de transacciones de la misma familia. &
+$a=$ rótulo para ser testeado por transacciones iguales. & \tabularnewline
+
+\hline
 \end{longtable}
-
-\pagebreak{}Para referirse a parámetros:
-\begin{enumerate}
-\item Por nombre: 
-
-\begin{enumerate}
-\item \texttt{P\$CAJAS}
-\item \texttt{{*}\$CAJAS}
-\item \texttt{{*}CAJAS}
-\end{enumerate}
-\item Por número:
-
-\begin{enumerate}
-\item \texttt{P4}
-\item \texttt{{*}4}
-\end{enumerate}
-\end{enumerate}
-Para referirse a un \texttt{SAVEVALUE}:
-\begin{enumerate}
-\item Por nombre: \texttt{X\$CAJAS}
-\item Por número: \texttt{X4}
-\end{enumerate}
-Para referirse a una \texttt{VARIABLE}: 
-\begin{enumerate}
-\item Direccionamiento directo: \texttt{V\$CAJA, V\$1}
-\item Direccionamiento indirecto: \texttt{V{*}CAJA, V{*}1}
-\end{enumerate}
-Para referirse a una \texttt{FUNCTION}: \texttt{FN\$FUNCION}
-
-Para referirse a una \texttt{MATRIX}:
-\begin{enumerate}
-\item Por nombre: \texttt{MX\$MATRIZ(col,fil)}
-\item Por número: \texttt{Mx4(col,fil)}\end{enumerate}
 
 \end{document}
